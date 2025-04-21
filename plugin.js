@@ -53,12 +53,13 @@ class WasmPackPlugin {
             path.resolve(this.crateDirectory, 'src')
         )
         this.watchFiles = [path.resolve(this.crateDirectory, 'Cargo.toml')]
+        this.wasmInstaller = options.wasmInstaller || null
 
         if (options.pluginLogLevel && options.pluginLogLevel !== 'info') {
             // The default value for pluginLogLevel is 'info'. If specified and it's
             // not 'info', don't log informational messages. If unspecified or 'info',
             // log as per usual.
-            info = () => {}
+            info = () => { }
         }
 
         this.wp = new Watchpack()
@@ -143,25 +144,37 @@ class WasmPackPlugin {
             return true
         }
 
+        if (this.wasmInstaller === null) {
+            info('⚠️  wasm-pack is not installed. Aborting. If you want to automatically install wasm-pack, add "wasmInstaller" to your WasmPackPlugin options')
+            return false
+        }
+
         info('ℹ️  Installing wasm-pack \n')
 
-        if (commandExistsSync('npm')) {
-            return runProcess('npm', ['install', '-g', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
+        if (this.wasmInstaller === "rust" && commandExistsSync('cargo')) {
+            return runProcess('cargo', ['install', 'wasm-pack']).catch(e => {
                 error(
-                    '⚠️ could not install wasm-pack globally when using npm, you must have permission to do this'
+                    '⚠️  could not install wasm-pack using cargo'
                 )
                 throw e
             })
-        } else if (commandExistsSync('yarn')) {
-            return runProcess('yarn', ['global', 'add', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
-                error(
-                    '⚠️ could not install wasm-pack globally when using yarn, you must have permission to do this'
-                )
-                throw e
-            })
+            } else if (this.wasmInstaller === "npm" && commandExistsSync('npm')) {
+                return runProcess('npm', ['install', '-g', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
+                    error(
+                        '⚠️  could not install wasm-pack globally when using npm, you must have permission to do this'
+                    )
+                    throw e
+                })
+            } else if (this.wasmInstaller === "yarn" && commandExistsSync('yarn')) {
+                return runProcess('yarn', ['global', 'add', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
+                    error(
+                        '⚠️  could not install wasm-pack globally when using yarn, you must have permission to do this'
+                    )
+                    throw e
+                })
         } else {
             error(
-                '⚠️ could not install wasm-pack, you must have yarn or npm installed'
+                `⚠️  could not install wasm-pack, you must have ${this.wasmInstaller} installed`
             )
         }
         return false
@@ -169,8 +182,7 @@ class WasmPackPlugin {
 
     _compile(watching) {
         info(
-            `ℹ️  Compiling your crate in ${
-                this.isDebug ? 'development' : 'release'
+            `ℹ️  Compiling your crate in ${this.isDebug ? 'development' : 'release'
             } mode...\n`
         )
 
@@ -243,9 +255,9 @@ function spawnWasmPack({
         env:
             env != null
                 ? {
-                      ...process.env,
-                      ...env,
-                  }
+                    ...process.env,
+                    ...env,
+                }
                 : undefined,
     }
 

@@ -86,6 +86,17 @@ module.exports = {
             // env: {
             //   WASM_BINDGEN_THREADS_STACK_SIZE: 128 * 2 ** 10
             // }
+
+            // If defined, wasm-pack is automatically installed using the specified installation method.
+            // If NOT defined and wasm-pack is not found, the program exits with an error.
+
+            // Possible values are: `rust`, `npm`, and `yarn`
+
+            // `rust` installs wasm-pack using `cargo install wasm-pack`
+            // `npm` installs wasm-pack from the npm registry
+            // `yarn` installs wasm-pack using yarn
+
+            // wasmInstaller: 'rust',
         }),
     ],
 

@@ -12,6 +12,7 @@ export interface WasmPackPluginOptions {
     /** Controls plugin output verbosity. Defaults to 'info'. */
     pluginLogLevel?: 'info' | 'error'
     env?: Record<string, string>
+    wasmInstaller?: 'rust' | 'npm' | 'yarn'
 }
 
 export default class WasmPackPlugin {
