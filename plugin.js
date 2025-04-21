@@ -225,6 +225,12 @@ class WasmPackPlugin {
                 this.error = e
 
                 if (watching) {
+                    // Tell user that we're clearing the file in case the error disappears
+                    info(
+                        `⚠️  Clearing ${
+                            (path.join(this.outDir, this.outName + ".js"), "")
+                        }`,
+                    )
                     // This is to trigger a recompilation so it displays the error message
                     this._makeEmpty()
                 }
