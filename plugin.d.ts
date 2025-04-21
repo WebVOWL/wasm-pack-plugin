@@ -1,18 +1,18 @@
-import { Compiler } from 'webpack'
+import { Compiler } from "webpack"
 
 export interface WasmPackPluginOptions {
     crateDirectory: string
     args?: string
     extraArgs?: string
     forceWatch?: boolean
-    forceMode?: 'development' | 'production'
+    forceMode?: "development" | "production"
     outDir?: string
     outName?: string
     watchDirectories?: string[]
     /** Controls plugin output verbosity. Defaults to 'info'. */
-    pluginLogLevel?: 'info' | 'error'
+    pluginLogLevel?: "info" | "error"
     env?: Record<string, string>
-    wasmInstaller?: 'rust' | 'npm' | 'yarn'
+    wasmInstaller?: "rust" | "npm" | "yarn"
 }
 
 export default class WasmPackPlugin {
@@ -24,8 +24,8 @@ export default class WasmPackPlugin {
 
 export = WasmPackPlugin
 
-declare module '@wasm-tool/wasm-pack-plugin' {
-    export { WasmPackPluginOptions, WasmPackPlugin }
+declare module "@wasm-tool/wasm-pack-plugin" {
+    export { WasmPackPlugin, WasmPackPluginOptions }
     export default WasmPackPlugin
     export = WasmPackPlugin
 }

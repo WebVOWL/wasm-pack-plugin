@@ -1,27 +1,27 @@
-const { spawn } = require('child_process')
-const fs = require('fs')
-const path = require('path')
-const commandExistsSync = require('command-exists').sync
-const chalk = require('chalk')
-const Watchpack = require('watchpack')
-const which = require('which')
-const { homedir } = require('os')
+const { spawn } = require("child_process")
+const fs = require("fs")
+const path = require("path")
+const commandExistsSync = require("command-exists").sync
+const chalk = require("chalk")
+const Watchpack = require("watchpack")
+const which = require("which")
+const { homedir } = require("os")
 
 const error = (msg) => console.error(chalk.bold.red(msg))
 let info = (msg) => console.log(chalk.bold.blue(msg))
 
 function findWasmPack() {
     // https://github.com/wasm-tool/wasm-pack-plugin/issues/58
-    if (process.env['WASM_PACK_PATH'] !== undefined) {
-        return process.env['WASM_PACK_PATH']
+    if (process.env["WASM_PACK_PATH"] !== undefined) {
+        return process.env["WASM_PACK_PATH"]
     }
 
-    const inPath = which.sync('wasm-pack', { nothrow: true })
+    const inPath = which.sync("wasm-pack", { nothrow: true })
     if (inPath) {
         return inPath
     }
 
-    const inCargo = path.join(homedir(), '.cargo', 'bin', 'wasm-pack')
+    const inCargo = path.join(homedir(), ".cargo", "bin", "wasm-pack")
     if (fs.existsSync(inCargo)) {
         return inCargo
     }
@@ -39,27 +39,27 @@ class WasmPackPlugin {
         this.crateDirectory = options.crateDirectory
         this.forceWatch = options.forceWatch
         this.forceMode = options.forceMode
-        this.args = (options.args || '--verbose')
+        this.args = (options.args || "--verbose")
             .trim()
-            .split(' ')
+            .split(" ")
             .filter((x) => x)
-        this.extraArgs = (options.extraArgs || '')
+        this.extraArgs = (options.extraArgs || "")
             .trim()
-            .split(' ')
+            .split(" ")
             .filter((x) => x)
-        this.outDir = options.outDir || 'pkg'
-        this.outName = options.outName || 'index'
+        this.outDir = options.outDir || "pkg"
+        this.outName = options.outName || "index"
         this.watchDirectories = (options.watchDirectories || []).concat(
-            path.resolve(this.crateDirectory, 'src')
+            path.resolve(this.crateDirectory, "src"),
         )
-        this.watchFiles = [path.resolve(this.crateDirectory, 'Cargo.toml')]
+        this.watchFiles = [path.resolve(this.crateDirectory, "Cargo.toml")]
         this.wasmInstaller = options.wasmInstaller || null
 
-        if (options.pluginLogLevel && options.pluginLogLevel !== 'info') {
+        if (options.pluginLogLevel && options.pluginLogLevel !== "info") {
             // The default value for pluginLogLevel is 'info'. If specified and it's
             // not 'info', don't log informational messages. If unspecified or 'info',
             // log as per usual.
-            info = () => { }
+            info = () => {}
         }
 
         this.wp = new Watchpack()
@@ -70,15 +70,15 @@ class WasmPackPlugin {
 
     apply(compiler) {
         this.isDebug = this.forceMode
-            ? this.forceMode === 'development'
-            : compiler.options.mode === 'development'
+            ? this.forceMode === "development"
+            : compiler.options.mode === "development"
 
         // This fixes an error in Webpack where it cannot find
         // the `pkg/index.js` file if Rust compilation errors.
         this._makeEmpty()
 
         // force first compilation
-        compiler.hooks.beforeCompile.tapPromise('WasmPackPlugin', () => {
+        compiler.hooks.beforeCompile.tapPromise("WasmPackPlugin", () => {
             if (this._ranInitialCompilation === true) {
                 return Promise.resolve()
             }
@@ -97,7 +97,7 @@ class WasmPackPlugin {
                         startTime: Date.now() - 10000,
                     })
 
-                    this.wp.on('aggregated', () => {
+                    this.wp.on("aggregated", () => {
                         this._compile(true)
                     })
                 }
@@ -108,7 +108,7 @@ class WasmPackPlugin {
 
         let first = true
 
-        compiler.hooks.thisCompilation.tap('WasmPackPlugin', (compilation) => {
+        compiler.hooks.thisCompilation.tap("WasmPackPlugin", (compilation) => {
             // Super hacky, needed to workaround a bug in Webpack which causes
             // thisCompilation to be triggered twice on the first compilation.
             if (first) {
@@ -127,54 +127,58 @@ class WasmPackPlugin {
         try {
             fs.mkdirSync(this.outDir, { recursive: true })
         } catch (e) {
-            if (e.code !== 'EEXIST') {
+            if (e.code !== "EEXIST") {
                 throw e
             }
         }
 
-        fs.writeFileSync(path.join(this.outDir, this.outName + '.js'), '')
+        fs.writeFileSync(path.join(this.outDir, this.outName + ".js"), "")
     }
 
     async _checkWasmPack() {
-        info('🧐  Checking for wasm-pack...\n')
+        info("🧐  Checking for wasm-pack...\n")
 
         const bin = findWasmPack()
         if (bin) {
-            info('✅  wasm-pack is installed at ' + bin + '. \n')
+            info("✅  wasm-pack is installed at " + bin + ". \n")
             return true
         }
 
         if (this.wasmInstaller === null) {
-            info('⚠️  wasm-pack is not installed. Aborting. If you want to automatically install wasm-pack, add "wasmInstaller" to your WasmPackPlugin options')
+            info(
+                '⚠️  wasm-pack is not installed. Aborting. If you want to automatically install wasm-pack, add "wasmInstaller" to your WasmPackPlugin options',
+            )
             return false
         }
 
-        info('ℹ️  Installing wasm-pack \n')
+        info("ℹ️  Installing wasm-pack \n")
 
-        if (this.wasmInstaller === "rust" && commandExistsSync('cargo')) {
-            return runProcess('cargo', ['install', 'wasm-pack']).catch(e => {
+        if (this.wasmInstaller === "rust" && commandExistsSync("cargo")) {
+            return runProcess("cargo", ["install", "wasm-pack"]).catch((e) => {
+                error("⚠️  could not install wasm-pack using cargo")
+                throw e
+            })
+        } else if (this.wasmInstaller === "npm" && commandExistsSync("npm")) {
+            return runProcess("npm", ["install", "-g", "wasm-pack"], {
+                stdio: ["ignore", "inherit", "inherit"],
+            }).catch((e) => {
                 error(
-                    '⚠️  could not install wasm-pack using cargo'
+                    "⚠️  could not install wasm-pack globally when using npm, you must have permission to do this",
                 )
                 throw e
             })
-            } else if (this.wasmInstaller === "npm" && commandExistsSync('npm')) {
-                return runProcess('npm', ['install', '-g', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
-                    error(
-                        '⚠️  could not install wasm-pack globally when using npm, you must have permission to do this'
-                    )
-                    throw e
-                })
-            } else if (this.wasmInstaller === "yarn" && commandExistsSync('yarn')) {
-                return runProcess('yarn', ['global', 'add', 'wasm-pack'], {stdio: ['ignore', 'inherit', 'inherit']}).catch(e => {
-                    error(
-                        '⚠️  could not install wasm-pack globally when using yarn, you must have permission to do this'
-                    )
-                    throw e
-                })
+        } else if (this.wasmInstaller === "yarn" && commandExistsSync("yarn")) {
+            return runProcess("yarn", ["global", "add", "wasm-pack"], {
+                stdio: ["ignore", "inherit", "inherit"],
+            }).catch((e) => {
+                error(
+                    "⚠️  could not install wasm-pack globally when using yarn, you must have permission to do this",
+                )
+                throw e
+            })
         } else {
             error(
-                `⚠️  could not install wasm-pack, you must have ${this.wasmInstaller} installed`
+                `⚠️  could not install wasm-pack, you must have ${this.wasmInstaller} installed`,
             )
         }
         return false
@@ -182,8 +186,9 @@ class WasmPackPlugin {
 
     _compile(watching) {
         info(
-            `ℹ️  Compiling your crate in ${this.isDebug ? 'development' : 'release'
-            } mode...\n`
+            `ℹ️  Compiling your crate in ${
+                this.isDebug ? "development" : "release"
+            } mode...\n`,
         )
 
         return fs.promises
@@ -212,7 +217,7 @@ class WasmPackPlugin {
                     info(detail)
                 }
 
-                info('✅  Your crate has been correctly compiled\n')
+                info("✅  Your crate has been correctly compiled\n")
             })
             .catch((e) => {
                 // Webpack has a custom error system, so we cannot return an
@@ -240,24 +245,24 @@ function spawnWasmPack({
 
     const allArgs = [
         ...args,
-        'build',
-        '--out-dir',
+        "build",
+        "--out-dir",
         outDir,
-        '--out-name',
+        "--out-name",
         outName,
-        ...(isDebug ? ['--dev'] : []),
+        ...(isDebug ? ["--dev"] : []),
         ...extraArgs,
     ]
 
     const options = {
         cwd,
-        stdio: 'inherit',
+        stdio: "inherit",
         env:
             env != null
                 ? {
-                    ...process.env,
-                    ...env,
-                }
+                      ...process.env,
+                      ...env,
+                  }
                 : undefined,
     }
 
@@ -268,17 +273,25 @@ function runProcess(bin, args, options) {
     return new Promise((resolve, reject) => {
         const p = spawn(bin, args, options)
 
-        p.on('close', (code) => {
+        p.on("close", (code) => {
             if (code === 0) {
                 resolve()
             } else {
-                error(`❌ Rust compilation process failed with exit code ${code}:\n${bin} ${args.join(' ')}\n with ${JSON.stringify(options, '\t')}`)
-                reject(new Error('Rust compilation.'))
+                error(
+                    `❌ Rust compilation process failed with exit code ${code}:\n${bin} ${args.join(
+                        " ",
+                    )}\n with ${JSON.stringify(options, "\t")}`,
+                )
+                reject(new Error("Rust compilation."))
             }
         })
 
-        p.on('error', (err) => {
-            error(`❌ Rust compilation process failed to run with ${err}:\n${bin} ${args.join(' ')}\n with ${JSON.stringify(options, '\t')}`)
+        p.on("error", (err) => {
+            error(
+                `❌ Rust compilation process failed to run with ${err}:\n${bin} ${args.join(
+                    " ",
+                )}\n with ${JSON.stringify(options, "\t")}`,
+            )
             reject(err)
         })
     })
