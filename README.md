@@ -24,7 +24,7 @@ The minimum required `wasm-pack` version is `0.8.0`
 
 ## Linting
 
-This project uses the `prettier` with default configuration. To manually format the code run the `lint:fix` script.
+This project uses the `prettier` formatter. To manually format the code run the `lint:fix` script.
 
 ## Usage
 
@@ -89,13 +89,12 @@ module.exports = {
 
             // If defined, wasm-pack is automatically installed using the specified installation method.
             // If NOT defined and wasm-pack is not found, the program exits with an error.
-
-            // Possible values are: `rust`, `npm`, and `yarn`
-
-            // `rust` installs wasm-pack using `cargo install wasm-pack`
-            // `npm` installs wasm-pack from the npm registry
-            // `yarn` installs wasm-pack using yarn
-
+            //
+            // Possible values are: `rust`, `npm`, and `yarn`.
+            //
+            // `rust` installs wasm-pack using `cargo install wasm-pack`.
+            // `npm` installs wasm-pack from the npm registry.
+            // `yarn` installs wasm-pack using yarn.
             // wasmInstaller: 'rust',
         }),
     ],
