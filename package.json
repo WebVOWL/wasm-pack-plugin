@@ -34,7 +34,6 @@
         "which": "^2.0.2"
     },
     "devDependencies": {
-        "@types/webpack": "*",
-        "prettier": "^2.4.1"
+        "@types/webpack": "*"
     }
 }
