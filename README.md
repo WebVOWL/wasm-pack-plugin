@@ -24,7 +24,7 @@ The minimum required `wasm-pack` version is `0.8.0`
 
 ## Linting
 
-This project uses the `prettier` with default configuration. To manually format the code run the `lint:fix` script.
+This project uses the `prettier` formatter. To manually format the code run the `lint:fix` script.
 
 ## Usage
 
