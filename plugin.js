@@ -73,15 +73,15 @@ class WasmPackPlugin {
             ? this.forceMode === "development"
             : compiler.options.mode === "development"
 
-        // This fixes an error in Webpack where it cannot find
-        // the `pkg/index.js` file if Rust compilation errors.
-        this._makeEmpty()
-
         // force first compilation
         compiler.hooks.beforeCompile.tapPromise("WasmPackPlugin", () => {
             if (this._ranInitialCompilation === true) {
                 return Promise.resolve()
             }
+
+            // This fixes an error in Webpack where it cannot find
+            // the `pkg/index.js` file if Rust compilation errors.
+            this._makeEmpty()
 
             this._ranInitialCompilation = true
 
@@ -131,12 +131,8 @@ class WasmPackPlugin {
                 throw e
             }
         }
-        // Tell user that we're clearing the file in case the error disappears
-        info(
-            `⚠️  Clearing ${
-                (path.join(this.outDir, this.outName + ".js"), "")
-            }`,
-        )
+        // Debugging
+        info(`⚠️  Clearing '${path.join(this.outDir, this.outName + ".js")}'`)
         fs.writeFileSync(path.join(this.outDir, this.outName + ".js"), "")
     }
 
