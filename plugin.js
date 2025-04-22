@@ -131,7 +131,12 @@ class WasmPackPlugin {
                 throw e
             }
         }
-
+        // Tell user that we're clearing the file in case the error disappears
+        info(
+            `⚠️  Clearing ${
+                (path.join(this.outDir, this.outName + ".js"), "")
+            }`,
+        )
         fs.writeFileSync(path.join(this.outDir, this.outName + ".js"), "")
     }
 
@@ -145,7 +150,7 @@ class WasmPackPlugin {
         }
 
         if (this.wasmInstaller === null) {
-            info(
+            error(
                 '⚠️  wasm-pack is not installed. Aborting. If you want to automatically install wasm-pack, add "wasmInstaller" to your WasmPackPlugin options',
             )
             return false
@@ -225,12 +230,6 @@ class WasmPackPlugin {
                 this.error = e
 
                 if (watching) {
-                    // Tell user that we're clearing the file in case the error disappears
-                    info(
-                        `⚠️  Clearing ${
-                            (path.join(this.outDir, this.outName + ".js"), "")
-                        }`,
-                    )
                     // This is to trigger a recompilation so it displays the error message
                     this._makeEmpty()
                 }
