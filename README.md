@@ -1,24 +1,23 @@
-# @wasm-tool/wasm-pack-plugin
+# @webvowl/wasm-pack-plugin
 
 > webpack plugin for Rust
 
 ## Installation
 
-With npm:
-
-```sh
-npm install --save-dev @wasm-tool/wasm-pack-plugin
-```
-
-Or with Yarn:
-
-```sh
-yarn add --dev @wasm-tool/wasm-pack-plugin
+Add it to your `package.json`:
+```json
+{
+    "devDependencies": {
+        "wasm-pack-plugin": "git://github.com/WebVOWL/wasm-pack-plugin.git#v1.7.1"
+    }
+}
 ```
 
 ### `wasm-pack`
 
-We expect `wasm-pack` to be in your `$PATH`. See [installation here](https://rustwasm.github.io/wasm-pack/installer).
+`wasm-pack` can be automatically installed by adding `wasmInstaller` to your [config options](#usage). 
+
+You can also install manually. We expect `wasm-pack` to be in your `$PATH`. See [installation here](https://rustwasm.github.io/wasm-pack/installer).
 
 The minimum required `wasm-pack` version is `0.8.0`
 
