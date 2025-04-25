@@ -131,9 +131,9 @@ class WasmPackPlugin {
                 throw e
             }
         }
-        const path = path.join(this.outDir, this.outName + ".js")
-        info(`ℹ️  Clearing '${path}'`)
-        fs.writeFileSync(path, "")
+        const outPath = path.join(this.outDir, this.outName + ".js")
+        info(`ℹ️  Clearing '${outPath}'`)
+        fs.writeFileSync(outPath, "")
     }
 
     async _checkWasmPack() {
