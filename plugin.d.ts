@@ -24,7 +24,7 @@ export default class WasmPackPlugin {
 
 export = WasmPackPlugin
 
-declare module "@wasm-tool/wasm-pack-plugin" {
+declare module "@webvowl/wasm-pack-plugin" {
     export { WasmPackPlugin, WasmPackPluginOptions }
     export default WasmPackPlugin
     export = WasmPackPlugin
