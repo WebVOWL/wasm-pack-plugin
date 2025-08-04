@@ -132,7 +132,7 @@ class WasmPackPlugin {
             }
         }
         const outPath = path.join(this.outDir, this.outName + ".js")
-        info(`ℹ️  Clearing '${outPath}'`)
+        info(`ℹ️   Clearing '${outPath}'\n`)
         fs.writeFileSync(outPath, "")
     }
 
@@ -187,7 +187,7 @@ class WasmPackPlugin {
 
     _compile(watching) {
         info(
-            `ℹ️  Compiling your crate in ${
+            `ℹ️   Compiling your crate in ${
                 this.isDebug ? "development" : "release"
             } mode...\n`,
         )
@@ -278,12 +278,11 @@ function runProcess(bin, args, options) {
             if (code === 0) {
                 resolve()
             } else {
-                error(
-                    `❌ Rust compilation process failed with exit code ${code}:\n${bin} ${args.join(
-                        " ",
-                    )}\n with ${JSON.stringify(options, "\t")}`,
-                )
-                reject(new Error("Rust compilation."))
+                errMsg = `Process failed with exit code ${code}:\n${bin} ${args.join(
+                    " ",
+                )}\n with ${JSON.stringify(options, "\t")}`
+                error(`❌ Rust compilation. ${errMsg}`)
+                reject(new Error(`Rust compilation. ${errMsg}`))
             }
         })
 
