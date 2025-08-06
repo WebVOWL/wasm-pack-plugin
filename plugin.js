@@ -141,7 +141,7 @@ class WasmPackPlugin {
 
         const bin = findWasmPack()
         if (bin) {
-            info("✅  wasm-pack is installed at " + bin + ". \n")
+            info(`✅  wasm-pack is installed at '${bin}'\n`)
             return true
         }
 
