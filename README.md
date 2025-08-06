@@ -9,7 +9,7 @@ Add it to your `package.json`:
 ```json
 {
     "devDependencies": {
-        "@webvowl/wasm-pack-plugin": "git://github.com/WebVOWL/wasm-pack-plugin.git#v1.7.2"
+        "@webvowl/wasm-pack-plugin": "git://github.com/WebVOWL/wasm-pack-plugin.git#v1.7.3"
     }
 }
 ```
